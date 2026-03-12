@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ reply: "Method not allowed" });
   }
@@ -25,31 +25,28 @@ If they seem serious, suggest they connect with Steve Tomaselli for pre-approval
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: \`Bearer \${process.env.OPENAI_API_KEY}\`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
         input: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: message },
-        ],
-      }),
+          { role: "user", content: message }
+        ]
+      })
     });
 
     const data = await response.json();
 
-    if (!response.ok) {
-      return res.status(200).json({
-        reply: `OpenAI error: ${data?.error?.message || "Unknown error"}`,
-      });
-    }
-
-    const reply = data.output_text || "Sorry, I couldn't generate a response.";
+    const reply =
+      data.output_text ||
+      "Sorry, I couldn't generate a response.";
 
     return res.status(200).json({ reply });
+
   } catch (error) {
     return res.status(200).json({
-      reply: `Server error: ${error.message}`,
+      reply: `Server error: ${error.message}`
     });
   }
-}
+};
