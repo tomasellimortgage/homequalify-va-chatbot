@@ -28,6 +28,7 @@ MOST COMMON QUESTIONS YOU SHOULD HANDLE WELL:
 - What credit score do I need?
 - Can I use a VA loan more than once?
 - What is a Certificate of Eligibility (COE)?
+- How do I get my COE?
 - How do I get pre-approved?
 
 CONVERSATION STYLE:
