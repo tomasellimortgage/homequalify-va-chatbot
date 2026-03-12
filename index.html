@@ -2,7 +2,6 @@
   const ZAPIER_WEBHOOK_URL = "YOUR_ZAPIER_WEBHOOK_URL_HERE";
   let leadSourceType = "Texas VA Homebuyer Advisor";
 
-  // Conversation memory for the chatbot
   let conversationMessages = [];
 
   async function sendMessage(customMessage) {
@@ -16,7 +15,6 @@
     chatBox.scrollTop = chatBox.scrollHeight;
     input.value = "";
 
-    // Add user message to conversation history
     conversationMessages.push({
       role: "user",
       content: message
@@ -39,7 +37,6 @@
       appendMessage("bot", cleanedReply);
       chatBox.scrollTop = chatBox.scrollHeight;
 
-      // Add assistant reply to conversation history
       conversationMessages.push({
         role: "assistant",
         content: cleanedReply
