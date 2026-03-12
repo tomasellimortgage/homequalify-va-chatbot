@@ -25,7 +25,7 @@ If they seem serious, suggest they connect with Steve Tomaselli for pre-approval
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: \`Bearer \${process.env.OPENAI_API_KEY}\`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
@@ -38,14 +38,17 @@ If they seem serious, suggest they connect with Steve Tomaselli for pre-approval
 
     const data = await response.json();
 
-    const reply =
-      data.output_text ||
-      "Sorry, I couldn't generate a response.";
+    if (!response.ok) {
+      return res.status(200).json({
+        reply: `OpenAI error: ${data?.error?.message || "Unknown error"}`,
+      });
+    }
 
-    res.status(200).json({ reply });
+    const reply = data.output_text || "Sorry, I couldn't generate a response.";
 
+    return res.status(200).json({ reply });
   } catch (error) {
-    res.status(200).json({
+    return res.status(200).json({
       reply: `Server error: ${error.message}`,
     });
   }
