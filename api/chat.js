@@ -29,21 +29,29 @@ If they seem serious, suggest they connect with Steve Tomaselli for pre-approval
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        input: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: message }
-        ]
+        instructions: systemPrompt,
+        input: message
       })
     });
 
     const data = await response.json();
 
-    const reply =
-      data.output_text ||
-      "Sorry, I couldn't generate a response.";
+    if (!response.ok) {
+      return res.status(200).json({
+        reply: `OpenAI error: ${data?.error?.message || "Unknown error"}`
+      });
+    }
 
-    return res.status(200).json({ reply });
+    const reply = (data.output || [])
+      .flatMap(item => item.content || [])
+      .filter(part => part.type === "output_text")
+      .map(part => part.text || "")
+      .join("\n")
+      .trim();
 
+    return res.status(200).json({
+      reply: reply || "Sorry, I couldn't generate a response."
+    });
   } catch (error) {
     return res.status(200).json({
       reply: `Server error: ${error.message}`
