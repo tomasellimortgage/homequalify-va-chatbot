@@ -85,10 +85,15 @@ Always be useful first.
     const inputMessages = safeMessages.map((msg) => ({
       role: msg.role === "assistant" ? "assistant" : "user",
       content: [
-        {
-          type: "input_text",
-          text: String(msg.content || "")
-        }
+        msg.role === "assistant"
+          ? {
+              type: "output_text",
+              text: String(msg.content || "")
+            }
+          : {
+              type: "input_text",
+              text: String(msg.content || "")
+            }
       ]
     }));
 
