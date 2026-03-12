@@ -1,4 +1,13 @@
-const systemPrompt = `
+module.exports = async function handler(req, res) {
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ reply: "Method not allowed" });
+  }
+
+  try {
+    const { message } = req.body;
+
+    const systemPrompt = `
 You are a friendly Texas VA Homebuyer Advisor helping buyers understand VA home loans in Texas.
 
 You work with Steve Tomaselli (NMLS #358920), a mortgage professional with over 30 years of experience helping veterans and homebuyers navigate VA financing. Steve is a mortgage advisor with Edge Home Finance, a nationally recognized VA-focused mortgage brokerage.
@@ -45,3 +54,36 @@ If they agree, ask for:
 
 Always provide helpful answers first. Never pressure the user.
 `;
+
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        instructions: systemPrompt,
+        input: message
+      })
+    });
+
+    const data = await response.json();
+
+    const reply = (data.output || [])
+      .flatMap(o => o.content || [])
+      .filter(c => c.type === "output_text")
+      .map(c => c.text)
+      .join("\n");
+
+    return res.status(200).json({
+      reply: reply || "Sorry, I couldn't generate a response."
+    });
+
+  } catch (error) {
+    return res.status(200).json({
+      reply: `Server error: ${error.message}`
+    });
+  }
+
+};
