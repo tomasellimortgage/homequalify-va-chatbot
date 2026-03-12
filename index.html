@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Texas VA Homebuyer Advisor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 40px 20px;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .header {
+      background: #0f172a;
+      color: white;
+      padding: 24px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 0;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+
+    .chat-box {
+      height: 420px;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f8fafc;
+      border-top: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .message {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      max-width: 80%;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .user {
+      background: #dbeafe;
+      margin-left: auto;
+    }
+
+    .bot {
+      background: #e5e7eb;
+      margin-right: auto;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      padding: 20px;
+      background: white;
+    }
+
+    input {
+      flex: 1;
+      padding: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      background: #0f172a;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1e293b;
+    }
+
+    .starter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 16px 20px 0;
+      background: white;
+    }
+
+    .starter-buttons button {
+      background: #e2e8f0;
+      color: #0f172a;
+      font-size: 14px;
+    }
+
+    .starter-buttons button:hover {
+      background: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Texas VA Homebuyer Advisor</h1>
+      <p>Ask questions about VA home loans, eligibility, affordability, funding fees, and next steps for buying a home in Texas.</p>
+    </div>
+
+    <div class="starter-buttons">
+      <button onclick="sendStarter('Am I eligible for a VA loan in Texas?')">VA Eligibility</button>
+      <button onclick="sendStarter('How much home can I afford with a VA loan?')">Affordability</button>
+      <button onclick="sendStarter('Do I need a down payment with a VA loan?')">Down Payment</button>
+      <button onclick="sendStarter('How does the VA funding fee work?')">Funding Fee</button>
+    </div>
+
+    <div id="chatBox" class="chat-box">
+      <div class="message bot">Hi, I’m your Texas VA Homebuyer Advisor. Ask me anything about buying a home in Texas with a VA loan.</div>
+    </div>
+
+    <div class="input-area">
+      <input
+        id="userInput"
+        type="text"
+        placeholder="Type your question here..."
+        onkeydown="if(event.key==='Enter') sendMessage()"
+      />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage(customMessage) {
+      const input = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+      const message = customMessage || input.value.trim();
+
+      if (!message) return;
+
+      chatBox.innerHTML += `<div class="message user">${escapeHtml(message)}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+      input.value = "";
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+
+        chatBox.innerHTML += `<div class="message bot">${escapeHtml(data.reply || "Sorry, something went wrong.")}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (error) {
+        chatBox.innerHTML += `<div class="message bot">Sorry, I ran into a technical problem. Please try again.</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function sendStarter(message) {
+      sendMessage(message);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
