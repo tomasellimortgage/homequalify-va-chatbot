@@ -240,4 +240,233 @@
     <div class="header">
       <h1>Texas VA Homebuyer Advisor</h1>
       <p>
-        Get quick answers about VA home loans, eligibility, affordability, funding fees, and next steps for buying
+        Get quick answers about VA home loans, eligibility, affordability, funding fees, and next steps for buying a home in Texas.
+      </p>
+    </div>
+
+    <div class="subheader">
+      <p>
+        Want real, personalized guidance from an expert with <strong>32+ years of experience</strong> who works for the <strong>#1 VA mortgage broker in the country</strong>? Steve Tomaselli (NMLS #358920) can review your exact situation and build a clear, tailored plan to get you into your Texas home the smart way.
+      </p>
+      <div class="top-cta-buttons">
+        <button class="primary-btn" data-action="lead" data-source="VA Homebuyer Plan">GET MY VA HOMEBUYER PLAN</button>
+        <button class="secondary-btn" data-action="lead" data-source="Steve Contact Request">HAVE STEVE CONTACT ME</button>
+      </div>
+    </div>
+
+    <div class="starter-buttons">
+      <button data-action="chat" data-message="Am I eligible for a VA loan in Texas?">AM I ELIGIBLE?</button>
+      <button data-action="chat" data-message="Do I need a down payment with a VA loan?">DO I NEED MONEY DOWN?</button>
+      <button data-action="chat" data-message="What credit score do I need for a VA loan?">WHAT ABOUT CREDIT?</button>
+      <button data-action="chat" data-message="How much home can I afford with a VA loan?">HOW MUCH HOME CAN I AFFORD?</button>
+      <button data-action="chat" data-message="Can you estimate how much house I could afford with a VA loan?">CHECK MY VA BUYING POWER</button>
+    </div>
+
+    <div id="chatBox" class="chat-box">
+      <div class="message bot">Hi, I’m your Texas VA Homebuyer Advisor.
+
+I can help you with:
+1. VA ELIGIBILITY
+2. HOW MUCH HOME YOU MAY BE ABLE TO AFFORD
+3. DOWN PAYMENT QUESTIONS
+4. CREDIT QUESTIONS
+5. NEXT STEPS IF YOU WANT TO BUY IN TEXAS
+
+What would you like help with?</div>
+    </div>
+
+    <div class="input-area">
+      <input
+        id="userInput"
+        type="text"
+        placeholder="Type your question here..."
+        onkeydown="if(event.key==='Enter') sendMessage()"
+      />
+      <button class="primary-btn" id="sendBtn">Send</button>
+    </div>
+
+    <div id="leadFormWrap" class="lead-form-wrap">
+      <h3>Connect With A VA Expert</h3>
+      <p>
+        Fill this out and Steve Tomaselli (NMLS #358920) can follow up with you about your VA homebuying questions and next steps.
+      </p>
+
+      <div class="form-grid">
+        <div>
+          <input id="firstName" type="text" placeholder="First Name" />
+        </div>
+        <div>
+          <input id="lastName" type="text" placeholder="Last Name" />
+        </div>
+        <div class="full">
+          <input id="email" type="email" placeholder="Email Address" />
+        </div>
+        <div class="full">
+          <input id="mobilePhone" type="tel" placeholder="Mobile Phone Number" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="primary-btn" id="submitLeadBtn">SUBMIT</button>
+        <button class="secondary-btn" id="cancelLeadBtn">CANCEL</button>
+      </div>
+
+      <div id="leadSuccess" class="success-message" style="display:none;"></div>
+      <div id="leadError" class="error-message" style="display:none;"></div>
+    </div>
+
+    <div class="disclosure">
+      Steve Tomaselli (NMLS #358920). This tool is for general informational purposes only and is not a commitment to lend. Loan approval depends on full application, credit, income, assets, property review, and underwriting.
+    </div>
+  </div>
+
+  <script>
+    const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24672591/uxx1avp/";
+    let leadSourceType = "Texas VA Homebuyer Advisor";
+    let conversationMessages = [];
+
+    async function sendMessage(customMessage) {
+      const input = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+      const message = customMessage || input.value.trim();
+
+      if (!message) return;
+
+      appendMessage("user", message);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      if (!customMessage) input.value = "";
+
+      conversationMessages.push({ role: "user", content: message });
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: conversationMessages })
+        });
+
+        const data = await response.json();
+        const cleanedReply = cleanText(data.reply || "Sorry, something went wrong.");
+
+        appendMessage("bot", cleanedReply);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        conversationMessages.push({ role: "assistant", content: cleanedReply });
+      } catch (error) {
+        appendMessage("bot", "Sorry, I ran into a technical problem. Please try again.");
+        chatBox.scrollTop = chatBox.scrollHeight;
+        console.error("Chat error:", error);
+      }
+    }
+
+    function appendMessage(type, text) {
+      const chatBox = document.getElementById("chatBox");
+      const div = document.createElement("div");
+      div.className = `message ${type}`;
+      div.textContent = cleanText(text);
+      chatBox.appendChild(div);
+    }
+
+    function cleanText(text) {
+      return String(text || "")
+        .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/`(.*?)`/g, "$1")
+        .replace(/^#{1,6}\s*/gm, "")
+        .trim();
+    }
+
+    function openLeadForm(source) {
+      leadSourceType = source || "Texas VA Homebuyer Advisor";
+      const form = document.getElementById("leadFormWrap");
+      form.classList.add("active");
+      document.getElementById("leadSuccess").style.display = "none";
+      document.getElementById("leadError").style.display = "none";
+      document.getElementById("firstName").focus();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    }
+
+    function closeLeadForm() {
+      document.getElementById("leadFormWrap").classList.remove("active");
+    }
+
+    async function submitLead() {
+      const firstName   = document.getElementById("firstName").value.trim();
+      const lastName    = document.getElementById("lastName").value.trim();
+      const email       = document.getElementById("email").value.trim();
+      const mobilePhone = document.getElementById("mobilePhone").value.trim();
+
+      const successEl = document.getElementById("leadSuccess");
+      const errorEl   = document.getElementById("leadError");
+
+      successEl.style.display = "none";
+      errorEl.style.display   = "none";
+
+      if (!firstName || !lastName || !email || !mobilePhone) {
+        errorEl.textContent = "Please fill out first name, last name, email, and mobile phone.";
+        errorEl.style.display = "block";
+        return;
+      }
+
+      try {
+        const payload = {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          mobile_phone: mobilePhone,
+          source: leadSourceType,
+          page: window.location.href,
+          timestamp: new Date().toISOString()
+        };
+
+        const response = await fetch(ZAPIER_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        // Zapier returns 200 OK on success, even with empty/minimal body
+        if (response.ok) {
+          successEl.textContent = "Thanks — your information has been submitted. Steve Tomaselli (NMLS #358920) will follow up soon.";
+          successEl.style.display = "block";
+
+          // Clear form
+          document.getElementById("firstName").value = "";
+          document.getElementById("lastName").value = "";
+          document.getElementById("email").value = "";
+          document.getElementById("mobilePhone").value = "";
+        } else {
+          const errorText = await response.text().catch(() => "Unknown error");
+          throw new Error(`Webhook failed: ${response.status} - ${errorText}`);
+        }
+      } catch (error) {
+        errorEl.textContent = "There was a problem submitting your information. Please try again.";
+        errorEl.style.display = "block";
+        console.error("Lead submission error:", error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".starter-buttons button, .top-cta-buttons button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const action = btn.dataset.action;
+          const source = btn.dataset.source;
+          const msg   = btn.dataset.message;
+
+          if (action === "lead") {
+            openLeadForm(source);
+          } else if (action === "chat" && msg) {
+            sendMessage(msg);
+          }
+        });
+      });
+
+      document.getElementById("sendBtn").addEventListener("click", () => sendMessage());
+
+      document.getElementById("submitLeadBtn").addEventListener("click", submitLead);
+      document.getElementById("cancelLeadBtn").addEventListener("click", closeLeadForm);
+    });
+  </script>
+</body>
+</html>
