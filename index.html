@@ -248,18 +248,18 @@
         Want personalized help? Steve Tomaselli (NMLS #358920) can review your situation and help you map out your best next step.
       </p>
       <div class="top-cta-buttons">
-        <button class="primary-btn" onclick="openLeadForm('VA Homebuyer Plan')">GET MY VA HOMEBUYER PLAN</button>
-        <button class="secondary-btn" onclick="openLeadForm('Steve Contact Request')">HAVE STEVE CONTACT ME</button>
+        <button class="primary-btn" data-action="lead" data-source="VA Homebuyer Plan">GET MY VA HOMEBUYER PLAN</button>
+        <button class="secondary-btn" data-action="lead" data-source="Steve Contact Request">HAVE STEVE CONTACT ME</button>
       </div>
     </div>
 
     <div class="starter-buttons">
-      <button onclick="sendStarter('Am I eligible for a VA loan in Texas?')">AM I ELIGIBLE?</button>
-      <button onclick="sendStarter('Do I need a down payment with a VA loan?')">DO I NEED MONEY DOWN?</button>
-      <button onclick="sendStarter('What credit score do I need for a VA loan?')">WHAT ABOUT CREDIT?</button>
-      <button onclick="sendStarter('How much home can I afford with a VA loan?')">HOW MUCH HOME CAN I AFFORD?</button>
-      <button onclick="sendStarter('Can you estimate how much house I could afford with a VA loan?')">CHECK MY VA BUYING POWER</button>
-      <button onclick="openLeadForm('Connect With A VA Expert')">CONNECT WITH A VA EXPERT</button>
+      <button data-action="chat" data-message="Am I eligible for a VA loan in Texas?">AM I ELIGIBLE?</button>
+      <button data-action="chat" data-message="Do I need a down payment with a VA loan?">DO I NEED MONEY DOWN?</button>
+      <button data-action="chat" data-message="What credit score do I need for a VA loan?">WHAT ABOUT CREDIT?</button>
+      <button data-action="chat" data-message="How much home can I afford with a VA loan?">HOW MUCH HOME CAN I AFFORD?</button>
+      <button data-action="chat" data-message="Can you estimate how much house I could afford with a VA loan?">CHECK MY VA BUYING POWER</button>
+      <button data-action="lead" data-source="Connect With A VA Expert">CONNECT WITH A VA EXPERT</button>
     </div>
 
     <div id="chatBox" class="chat-box">
@@ -282,7 +282,7 @@ What would you like help with?</div>
         placeholder="Type your question here..."
         onkeydown="if(event.key==='Enter') sendMessage()"
       />
-      <button class="primary-btn" onclick="sendMessage()">Send</button>
+      <button class="primary-btn" id="sendBtn">Send</button>
     </div>
 
     <div id="leadFormWrap" class="lead-form-wrap">
@@ -307,8 +307,8 @@ What would you like help with?</div>
       </div>
 
       <div class="form-actions">
-        <button class="primary-btn" onclick="submitLead()">SUBMIT</button>
-        <button class="secondary-btn" onclick="closeLeadForm()">CANCEL</button>
+        <button class="primary-btn" id="submitLeadBtn">SUBMIT</button>
+        <button class="secondary-btn" id="cancelLeadBtn">CANCEL</button>
       </div>
 
       <div id="leadSuccess" class="success-message" style="display:none;"></div>
@@ -325,6 +325,10 @@ What would you like help with?</div>
     let leadSourceType = "Texas VA Homebuyer Advisor";
     let conversationMessages = [];
 
+    // ────────────────────────────────────────────────
+    // Core Chat Functions (unchanged)
+    // ────────────────────────────────────────────────
+
     async function sendMessage(customMessage) {
       const input = document.getElementById("userInput");
       const chatBox = document.getElementById("chatBox");
@@ -334,34 +338,24 @@ What would you like help with?</div>
 
       appendMessage("user", message);
       chatBox.scrollTop = chatBox.scrollHeight;
-      input.value = "";
+      if (!customMessage) input.value = "";
 
-      conversationMessages.push({
-        role: "user",
-        content: message
-      });
+      conversationMessages.push({ role: "user", content: message });
 
       try {
         const response = await fetch("/api/chat", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            messages: conversationMessages
-          })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: conversationMessages })
         });
 
         const data = await response.json();
-        const cleanedReply = cleanText(data.reply || "Sorry, something went wrong."));
+        const cleanedReply = cleanText(data.reply || "Sorry, something went wrong.");
 
         appendMessage("bot", cleanedReply);
         chatBox.scrollTop = chatBox.scrollHeight;
 
-        conversationMessages.push({
-          role: "assistant",
-          content: cleanedReply
-        });
+        conversationMessages.push({ role: "assistant", content: cleanedReply });
       } catch (error) {
         appendMessage("bot", "Sorry, I ran into a technical problem. Please try again.");
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -369,20 +363,16 @@ What would you like help with?</div>
       }
     }
 
-    function sendStarter(message) {
-      sendMessage(message);
-    }
-
     function appendMessage(type, text) {
       const chatBox = document.getElementById("chatBox");
       const div = document.createElement("div");
-      div.className = "message " + type;
+      div.className = `message ${type}`;
       div.textContent = cleanText(text);
       chatBox.appendChild(div);
     }
 
     function cleanText(text) {
-      return String(text)
+      return String(text || "")
         .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
         .replace(/\*\*(.*?)\*\*/g, "$1")
         .replace(/\*(.*?)\*/g, "$1")
@@ -391,9 +381,14 @@ What would you like help with?</div>
         .trim();
     }
 
-    function openLeadForm(sourceType) {
-      leadSourceType = sourceType || "Texas VA Homebuyer Advisor";
-      document.getElementById("leadFormWrap").classList.add("active");
+    // ────────────────────────────────────────────────
+    // Lead Form Functions
+    // ────────────────────────────────────────────────
+
+    function openLeadForm(source) {
+      leadSourceType = source || "Texas VA Homebuyer Advisor";
+      const form = document.getElementById("leadFormWrap");
+      form.classList.add("active");
       document.getElementById("leadSuccess").style.display = "none";
       document.getElementById("leadError").style.display = "none";
       document.getElementById("firstName").focus();
@@ -405,16 +400,16 @@ What would you like help with?</div>
     }
 
     async function submitLead() {
-      const firstName = document.getElementById("firstName").value.trim();
-      const lastName = document.getElementById("lastName").value.trim();
-      const email = document.getElementById("email").value.trim();
+      const firstName   = document.getElementById("firstName").value.trim();
+      const lastName    = document.getElementById("lastName").value.trim();
+      const email       = document.getElementById("email").value.trim();
       const mobilePhone = document.getElementById("mobilePhone").value.trim();
 
       const successEl = document.getElementById("leadSuccess");
-      const errorEl = document.getElementById("leadError");
+      const errorEl   = document.getElementById("leadError");
 
       successEl.style.display = "none";
-      errorEl.style.display = "none";
+      errorEl.style.display   = "none";
 
       if (!firstName || !lastName || !email || !mobilePhone) {
         errorEl.textContent = "Please fill out first name, last name, email, and mobile phone.";
@@ -435,19 +430,16 @@ What would you like help with?</div>
 
         const response = await fetch(ZAPIER_WEBHOOK_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
-        if (!response.ok) {
-          throw new Error("Webhook request failed");
-        }
+        if (!response.ok) throw new Error("Webhook failed");
 
         successEl.textContent = "Thanks — your information has been submitted. Steve Tomaselli (NMLS #358920) will follow up soon.";
         successEl.style.display = "block";
 
+        // Clear form
         document.getElementById("firstName").value = "";
         document.getElementById("lastName").value = "";
         document.getElementById("email").value = "";
@@ -458,6 +450,34 @@ What would you like help with?</div>
         console.error("Lead form error:", error);
       }
     }
+
+    // ────────────────────────────────────────────────
+    // Attach all button listeners once DOM is ready
+    // ────────────────────────────────────────────────
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Starter / CTA buttons
+      document.querySelectorAll(".starter-buttons button, .top-cta-buttons button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const action = btn.dataset.action;
+          const source = btn.dataset.source;
+          const msg   = btn.dataset.message;
+
+          if (action === "lead") {
+            openLeadForm(source);
+          } else if (action === "chat" && msg) {
+            sendMessage(msg);
+          }
+        });
+      });
+
+      // Send message button + Enter key already handled inline
+      document.getElementById("sendBtn").addEventListener("click", () => sendMessage());
+
+      // Lead form buttons
+      document.getElementById("submitLeadBtn").addEventListener("click", submitLead);
+      document.getElementById("cancelLeadBtn").addEventListener("click", closeLeadForm);
+    });
   </script>
 </body>
 </html>
