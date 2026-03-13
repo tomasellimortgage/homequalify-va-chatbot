@@ -260,7 +260,6 @@
       <button data-action="chat" data-message="What credit score do I need for a VA loan?">WHAT ABOUT CREDIT?</button>
       <button data-action="chat" data-message="How much home can I afford with a VA loan?">HOW MUCH HOME CAN I AFFORD?</button>
       <button data-action="chat" data-message="Can you estimate how much house I could afford with a VA loan?">CHECK MY VA BUYING POWER</button>
-      <!-- Removed: CONNECT WITH A VA EXPERT button -->
     </div>
 
     <div id="chatBox" class="chat-box">
@@ -322,12 +321,12 @@ What would you like help with?</div>
   </div>
 
   <script>
-    const ZAPIER_WEBHOOK_URL = "YOUR_ZAPIER_WEBHOOK_URL_HERE";
+    const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24672591/uxx1avp/";
     let leadSourceType = "Texas VA Homebuyer Advisor";
     let conversationMessages = [];
 
     // ────────────────────────────────────────────────
-    // Core Chat Functions (unchanged)
+    // Core Chat Functions
     // ────────────────────────────────────────────────
 
     async function sendMessage(customMessage) {
@@ -435,7 +434,7 @@ What would you like help with?</div>
           body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error("Webhook failed");
+        if (!response.ok) throw new Error("Webhook failed: " + response.status);
 
         successEl.textContent = "Thanks — your information has been submitted. Steve Tomaselli (NMLS #358920) will follow up soon.";
         successEl.style.display = "block";
@@ -453,12 +452,10 @@ What would you like help with?</div>
     }
 
     // ────────────────────────────────────────────────
-    // Attach all button listeners once DOM is ready
+    // Attach button listeners once DOM is ready
     // ────────────────────────────────────────────────
 
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("🚀 Script loaded and listeners attached!"); // temporary debug - remove later if desired
-
       // Starter / CTA buttons
       document.querySelectorAll(".starter-buttons button, .top-cta-buttons button").forEach(btn => {
         btn.addEventListener("click", () => {
