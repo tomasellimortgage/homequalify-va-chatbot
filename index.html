@@ -1,139 +1,185 @@
-<script>
-  const ZAPIER_WEBHOOK_URL = "YOUR_ZAPIER_WEBHOOK_URL_HERE";
-  let leadSourceType = "Texas VA Homebuyer Advisor";
-  let conversationMessages = [];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Texas VA Homebuyer Advisor Chat</title>
+  <style>
+    /* Basic styling so the elements aren't invisible */
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+    #chatBox { border: 1px solid #ccc; height: 300px; overflow-y: auto; padding: 10px; margin-bottom: 10px; }
+    .message { margin-bottom: 10px; padding: 8px; border-radius: 4px; }
+    .user { background-color: #e3f2fd; text-align: right; }
+    .bot { background-color: #f5f5f5; text-align: left; }
+    #leadFormWrap { display: none; margin-top: 20px; border: 1px solid #ccc; padding: 15px; }
+    #leadFormWrap.active { display: block; }
+    input { margin-bottom: 10px; padding: 8px; width: 100%; box-sizing: border-box; }
+    button { padding: 10px; cursor: pointer; }
+    .error { color: red; display: none; }
+    .success { color: green; display: none; }
+  </style>
+</head>
+<body>
 
-  async function sendMessage(customMessage) {
-    const input = document.getElementById("userInput");
-    const chatBox = document.getElementById("chatBox");
-    const message = customMessage || input.value.trim();
+  <h2>Chat Advisor</h2>
+  
+  <div id="chatBox"></div>
+  <input type="text" id="userInput" placeholder="Type your message here...">
+  <button onclick="sendMessage()">Send</button>
+  <button onclick="openLeadForm()">Contact Steve</button>
 
-    if (!message) return;
+  <div id="leadFormWrap">
+    <h3>Contact Information</h3>
+    <div id="leadSuccess" class="success"></div>
+    <div id="leadError" class="error"></div>
+    
+    <input type="text" id="firstName" placeholder="First Name">
+    <input type="text" id="lastName" placeholder="Last Name">
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="tel" id="mobilePhone" placeholder="Mobile Phone">
+    
+    <button onclick="submitLead()">Submit</button>
+    <button onclick="closeLeadForm()">Cancel</button>
+  </div>
 
-    appendMessage("user", message);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    input.value = "";
+  <script>
+    const ZAPIER_WEBHOOK_URL = "YOUR_ZAPIER_WEBHOOK_URL_HERE";
+    let leadSourceType = "Texas VA Homebuyer Advisor";
+    let conversationMessages = [];
 
-    conversationMessages.push({
-      role: "user",
-      content: message
-    });
+    async function sendMessage(customMessage) {
+      const input = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+      const message = customMessage || input.value.trim();
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          messages: conversationMessages
-        })
-      });
+      if (!message) return;
 
-      const data = await response.json();
-      const cleanedReply = cleanText(data.reply || "Sorry, something went wrong.");
-
-      appendMessage("bot", cleanedReply);
+      appendMessage("user", message);
       chatBox.scrollTop = chatBox.scrollHeight;
+      input.value = "";
 
       conversationMessages.push({
-        role: "assistant",
-        content: cleanedReply
-      });
-    } catch (error) {
-      appendMessage("bot", "Sorry, I ran into a technical problem. Please try again.");
-      chatBox.scrollTop = chatBox.scrollHeight;
-      console.error("Chat error:", error);
-    }
-  }
-
-  function sendStarter(message) {
-    sendMessage(message);
-  }
-
-  function appendMessage(type, text) {
-    const chatBox = document.getElementById("chatBox");
-    const div = document.createElement("div");
-    div.className = `message ${type}`;
-    div.textContent = cleanText(text);
-    chatBox.appendChild(div);
-  }
-
-  function cleanText(text) {
-    return String(text)
-      .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
-      .replace(/\*\*(.*?)\*\*/g, "$1")
-      .replace(/\*(.*?)\*/g, "$1")
-      .replace(/`(.*?)`/g, "$1")
-      .replace(/^#{1,6}\s*/gm, "")
-      .trim();
-  }
-
-  function openLeadForm(sourceType) {
-    leadSourceType = sourceType || "Texas VA Homebuyer Advisor";
-    document.getElementById("leadFormWrap").classList.add("active");
-    document.getElementById("leadSuccess").style.display = "none";
-    document.getElementById("leadError").style.display = "none";
-    document.getElementById("firstName").focus();
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-  }
-
-  function closeLeadForm() {
-    document.getElementById("leadFormWrap").classList.remove("active");
-  }
-
-  async function submitLead() {
-    const firstName = document.getElementById("firstName").value.trim();
-    const lastName = document.getElementById("lastName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const mobilePhone = document.getElementById("mobilePhone").value.trim();
-
-    const successEl = document.getElementById("leadSuccess");
-    const errorEl = document.getElementById("leadError");
-
-    successEl.style.display = "none";
-    errorEl.style.display = "none";
-
-    if (!firstName || !lastName || !email || !mobilePhone) {
-      errorEl.textContent = "Please fill out first name, last name, email, and mobile phone.";
-      errorEl.style.display = "block";
-      return;
-    }
-
-    try {
-      const payload = {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        mobile_phone: mobilePhone,
-        source: leadSourceType,
-        page: window.location.href,
-        timestamp: new Date().toISOString()
-      };
-
-      const response = await fetch(ZAPIER_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+        role: "user",
+        content: message
       });
 
-      if (!response.ok) {
-        throw new Error("Webhook request failed");
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            messages: conversationMessages
+          })
+        });
+
+        const data = await response.json();
+        const cleanedReply = cleanText(data.reply || "Sorry, something went wrong.");
+
+        appendMessage("bot", cleanedReply);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        conversationMessages.push({
+          role: "assistant",
+          content: cleanedReply
+        });
+      } catch (error) {
+        appendMessage("bot", "Sorry, I ran into a technical problem. Please try again.");
+        chatBox.scrollTop = chatBox.scrollHeight;
+        console.error("Chat error:", error);
+      }
+    }
+
+    function sendStarter(message) {
+      sendMessage(message);
+    }
+
+    function appendMessage(type, text) {
+      const chatBox = document.getElementById("chatBox");
+      const div = document.createElement("div");
+      div.className = `message ${type}`;
+      div.textContent = cleanText(text);
+      chatBox.appendChild(div);
+    }
+
+    function cleanText(text) {
+      return String(text)
+        .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/`(.*?)`/g, "$1")
+        .replace(/^#{1,6}\s*/gm, "")
+        .trim();
+    }
+
+    function openLeadForm(sourceType) {
+      leadSourceType = sourceType || "Texas VA Homebuyer Advisor";
+      document.getElementById("leadFormWrap").classList.add("active");
+      document.getElementById("leadSuccess").style.display = "none";
+      document.getElementById("leadError").style.display = "none";
+      document.getElementById("firstName").focus();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    }
+
+    function closeLeadForm() {
+      document.getElementById("leadFormWrap").classList.remove("active");
+    }
+
+    async function submitLead() {
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const mobilePhone = document.getElementById("mobilePhone").value.trim();
+
+      const successEl = document.getElementById("leadSuccess");
+      const errorEl = document.getElementById("leadError");
+
+      successEl.style.display = "none";
+      errorEl.style.display = "none";
+
+      if (!firstName || !lastName || !email || !mobilePhone) {
+        errorEl.textContent = "Please fill out first name, last name, email, and mobile phone.";
+        errorEl.style.display = "block";
+        return;
       }
 
-      successEl.textContent = "Thanks — your information has been submitted. Steve Tomaselli (NMLS #358920) will follow up soon.";
-      successEl.style.display = "block";
+      try {
+        const payload = {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          mobile_phone: mobilePhone,
+          source: leadSourceType,
+          page: window.location.href,
+          timestamp: new Date().toISOString()
+        };
 
-      document.getElementById("firstName").value = "";
-      document.getElementById("lastName").value = "";
-      document.getElementById("email").value = "";
-      document.getElementById("mobilePhone").value = "";
-    } catch (error) {
-      errorEl.textContent = "There was a problem submitting your information. Please try again.";
-      errorEl.style.display = "block";
-      console.error("Lead form error:", error);
+        const response = await fetch(ZAPIER_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error("Webhook request failed");
+        }
+
+        successEl.textContent = "Thanks — your information has been submitted. Steve Tomaselli (NMLS #358920) will follow up soon.";
+        successEl.style.display = "block";
+
+        document.getElementById("firstName").value = "";
+        document.getElementById("lastName").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("mobilePhone").value = "";
+      } catch (error) {
+        errorEl.textContent = "There was a problem submitting your information. Please try again.";
+        errorEl.style.display = "block";
+        console.error("Lead form error:", error);
+      }
     }
-  }
-</script>
+  </script>
+</body>
+</html>
