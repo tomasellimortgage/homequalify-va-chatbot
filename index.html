@@ -5,233 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Texas VA Homebuyer Advisor</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      margin: 0;
-      padding: 24px 16px;
-      color: #1f2937;
-    }
-
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-    }
-
-    .header {
-      background: #0f172a;
-      color: white;
-      padding: 24px;
-    }
-
-    .header h1 {
-      margin: 0 0 8px;
-      font-size: 30px;
-      line-height: 1.2;
-    }
-
-    .header p {
-      margin: 0;
-      line-height: 1.5;
-      opacity: 0.95;
-      font-size: 15px;
-    }
-
-    .subheader {
-      padding: 16px 20px;
-      background: #eef2ff;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .subheader p {
-      margin: 0 0 12px;
-      font-size: 15px;
-      line-height: 1.5;
-      font-weight: 500;
-    }
-
-    .top-cta-buttons,
-    .starter-buttons,
-    .form-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    button:hover {
-      opacity: 0.92;
-    }
-
-    .primary-btn {
-      background: #0f172a;
-      color: white;
-    }
-
-    .secondary-btn {
-      background: #dbeafe;
-      color: #0f172a;
-    }
-
-    .starter-buttons {
-      padding: 16px 20px 0;
-      background: white;
-    }
-
-    .starter-buttons button {
-      background: #e2e8f0;
-      color: #0f172a;
-      font-size: 14px;
-    }
-
-    .chat-box {
-      height: 430px;
-      overflow-y: auto;
-      padding: 20px;
-      background: #f8fafc;
-      border-top: 1px solid #e5e7eb;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .message {
-      margin-bottom: 16px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      max-width: 85%;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      font-size: 14px;
-    }
-
-    .user {
-      background: #dbeafe;
-      margin-left: auto;
-    }
-
-    .bot {
-      background: #e5e7eb;
-      margin-right: auto;
-    }
-
-    .input-area {
-      display: flex;
-      gap: 10px;
-      padding: 18px 20px;
-      background: white;
-    }
-
-    .input-area input {
-      flex: 1;
-      padding: 14px;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      font-size: 16px;
-    }
-
-    .lead-form-wrap {
-      display: none;
-      padding: 20px;
-      background: #ffffff;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    .lead-form-wrap.active {
-      display: block;
-    }
-
-    .lead-form-wrap h3 {
-      margin: 0 0 8px;
-      font-size: 22px;
-    }
-
-    .lead-form-wrap p {
-      margin: 0 0 16px;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .form-grid .full {
-      grid-column: 1 / -1;
-    }
-
-    .lead-form-wrap input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 14px;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      font-size: 15px;
-    }
-
-    .form-actions {
-      margin-top: 14px;
-    }
-
-    .success-message,
-    .error-message {
-      margin-top: 14px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .success-message {
-      color: #166534;
-    }
-
-    .error-message {
-      color: #b91c1c;
-    }
-
-    .disclosure {
-      padding: 14px 20px 20px;
-      font-size: 12px;
-      line-height: 1.5;
-      color: #475569;
-      background: #ffffff;
-    }
-
+    body { font-family: Arial, sans-serif; background: #f5f7fb; margin: 0; padding: 24px 16px; color: #1f2937; }
+    .container { max-width: 760px; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; }
+    .header { background: #0f172a; color: white; padding: 24px; }
+    .header h1 { margin: 0 0 8px; font-size: 30px; line-height: 1.2; }
+    .header p { margin: 0; line-height: 1.5; opacity: 0.95; font-size: 15px; }
+    .subheader { padding: 16px 20px; background: #eef2ff; border-bottom: 1px solid #e5e7eb; }
+    .subheader p { margin: 0 0 12px; font-size: 15px; line-height: 1.5; font-weight: 500; }
+    .top-cta-buttons, .starter-buttons, .form-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    button { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; cursor: pointer; transition: 0.2s ease; }
+    button:hover { opacity: 0.92; }
+    .primary-btn { background: #0f172a; color: white; }
+    .secondary-btn { background: #dbeafe; color: #0f172a; }
+    .starter-buttons { padding: 16px 20px 0; background: white; }
+    .starter-buttons button { background: #e2e8f0; color: #0f172a; font-size: 14px; }
+    .chat-box { height: 430px; overflow-y: auto; padding: 20px; background: #f8fafc; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
+    .message { margin-bottom: 16px; padding: 12px 14px; border-radius: 12px; max-width: 85%; line-height: 1.5; white-space: pre-wrap; font-size: 14px; }
+    .user { background: #dbeafe; margin-left: auto; }
+    .bot { background: #e5e7eb; margin-right: auto; }
+    .input-area { display: flex; gap: 10px; padding: 18px 20px; background: white; }
+    .input-area input { flex: 1; padding: 14px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 16px; }
+    .lead-form-wrap { display: none; padding: 20px; background: #ffffff; border-top: 1px solid #e5e7eb; }
+    .lead-form-wrap.active { display: block; }
+    .lead-form-wrap h3 { margin: 0 0 8px; font-size: 22px; }
+    .lead-form-wrap p { margin: 0 0 16px; line-height: 1.5; font-size: 14px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .lead-form-wrap input { width: 100%; box-sizing: border-box; padding: 14px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 15px; }
+    .form-actions { margin-top: 14px; }
+    .success-message, .error-message { margin-top: 14px; font-size: 14px; line-height: 1.5; }
+    .success-message { color: #166534; }
+    .error-message { color: #b91c1c; }
+    .disclosure { padding: 14px 20px 20px; font-size: 12px; line-height: 1.5; color: #475569; background: #ffffff; }
     @media (max-width: 640px) {
-      body {
-        padding: 12px;
-      }
-
-      .header h1 {
-        font-size: 24px;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .message {
-        max-width: 92%;
-      }
-
-      .input-area {
-        flex-direction: column;
-      }
-
-      .input-area button {
-        width: 100%;
-      }
+      body { padding: 12px; }
+      .header h1 { font-size: 24px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .message { max-width: 92%; }
+      .input-area { flex-direction: column; }
+      .input-area button { width: 100%; }
     }
   </style>
 </head>
@@ -239,15 +51,11 @@
   <div class="container">
     <div class="header">
       <h1>Texas VA Homebuyer Advisor</h1>
-      <p>
-        Get quick answers about VA home loans, eligibility, affordability, funding fees, and next steps for buying a home in Texas.
-      </p>
+      <p>Get quick answers about VA home loans, eligibility, affordability, funding fees, and next steps for buying a home in Texas.</p>
     </div>
 
     <div class="subheader">
-      <p>
-        Want real, personalized guidance from an expert with <strong>32+ years of experience</strong> who works for the <strong>#1 VA mortgage broker in the country</strong>? Steve Tomaselli (NMLS #358920) can review your exact situation and build a clear, tailored plan to get you into your Texas home the smart way.
-      </p>
+      <p>Want real, personalized guidance from an expert with <strong>32+ years of experience</strong> who works for the <strong>#1 VA mortgage broker in the country</strong>? Steve Tomaselli (NMLS #358920) can review your exact situation and build a clear, tailored plan to get you into your Texas home the smart way.</p>
       <div class="top-cta-buttons">
         <button class="primary-btn" data-action="lead" data-source="VA Homebuyer Plan">GET MY VA HOMEBUYER PLAN</button>
         <button class="secondary-btn" data-action="lead" data-source="Steve Contact Request">HAVE STEVE CONTACT ME</button>
@@ -263,54 +71,27 @@
     </div>
 
     <div id="chatBox" class="chat-box">
-      <div class="message bot">Hi, I’m your Texas VA Homebuyer Advisor.
-
-I can help you with:
-1. VA ELIGIBILITY
-2. HOW MUCH HOME YOU MAY BE ABLE TO AFFORD
-3. DOWN PAYMENT QUESTIONS
-4. CREDIT QUESTIONS
-5. NEXT STEPS IF YOU WANT TO BUY IN TEXAS
-
-What would you like help with?</div>
+      <div class="message bot">Hi, I’m your Texas VA Homebuyer Advisor.\n\nI can help you with:\n1. VA ELIGIBILITY\n2. HOW MUCH HOME YOU MAY BE ABLE TO AFFORD\n3. DOWN PAYMENT QUESTIONS\n4. CREDIT QUESTIONS\n5. NEXT STEPS IF YOU WANT TO BUY IN TEXAS\n\nWhat would you like help with?</div>
     </div>
 
     <div class="input-area">
-      <input
-        id="userInput"
-        type="text"
-        placeholder="Type your question here..."
-        onkeydown="if(event.key==='Enter') sendMessage()"
-      />
+      <input id="userInput" type="text" placeholder="Type your question here..." onkeydown="if(event.key==='Enter') sendMessage()" />
       <button class="primary-btn" id="sendBtn">Send</button>
     </div>
 
     <div id="leadFormWrap" class="lead-form-wrap">
       <h3>Connect With A VA Expert</h3>
-      <p>
-        Fill this out and Steve Tomaselli (NMLS #358920) can follow up with you about your VA homebuying questions and next steps.
-      </p>
-
+      <p>Fill this out and Steve Tomaselli (NMLS #358920) can follow up with you about your VA homebuying questions and next steps.</p>
       <div class="form-grid">
-        <div>
-          <input id="firstName" type="text" placeholder="First Name" />
-        </div>
-        <div>
-          <input id="lastName" type="text" placeholder="Last Name" />
-        </div>
-        <div class="full">
-          <input id="email" type="email" placeholder="Email Address" />
-        </div>
-        <div class="full">
-          <input id="mobilePhone" type="tel" placeholder="Mobile Phone Number" />
-        </div>
+        <div><input id="firstName" type="text" placeholder="First Name" /></div>
+        <div><input id="lastName" type="text" placeholder="Last Name" /></div>
+        <div class="full"><input id="email" type="email" placeholder="Email Address" /></div>
+        <div class="full"><input id="mobilePhone" type="tel" placeholder="Mobile Phone Number" /></div>
       </div>
-
       <div class="form-actions">
         <button class="primary-btn" id="submitLeadBtn">SUBMIT</button>
         <button class="secondary-btn" id="cancelLeadBtn">CANCEL</button>
       </div>
-
       <div id="leadSuccess" class="success-message" style="display:none;"></div>
       <div id="leadError" class="error-message" style="display:none;"></div>
     </div>
@@ -328,7 +109,7 @@ What would you like help with?</div>
     async function sendMessage(customMessage) {
       const input = document.getElementById("userInput");
       const chatBox = document.getElementById("chatBox");
-      const message = customMessage || input.value.trim();
+      const message = customMessage || input?.value?.trim() || "";
 
       if (!message) return;
 
@@ -341,4 +122,143 @@ What would you like help with?</div>
       try {
         const response = await fetch("/api/chat", {
           method: "POST",
-          headers: { "Content-Type": "
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: conversationMessages })
+        });
+
+        const data = await response.json();
+        const cleanedReply = cleanText(data.reply || "Sorry, something went wrong.");
+
+        appendMessage("bot", cleanedReply);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        conversationMessages.push({ role: "assistant", content: cleanedReply });
+      } catch (error) {
+        appendMessage("bot", "Sorry, I ran into a technical problem. Please try again.");
+        chatBox.scrollTop = chatBox.scrollHeight;
+        console.error("Chat error:", error);
+      }
+    }
+
+    function appendMessage(type, text) {
+      const chatBox = document.getElementById("chatBox");
+      if (!chatBox) return;
+      const div = document.createElement("div");
+      div.className = `message ${type}`;
+      div.textContent = cleanText(text);
+      chatBox.appendChild(div);
+    }
+
+    function cleanText(text) {
+      return String(text || "")
+        .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/`(.*?)`/g, "$1")
+        .replace(/^#{1,6}\s*/gm, "")
+        .trim();
+    }
+
+    function openLeadForm(source) {
+      leadSourceType = source || "Texas VA Homebuyer Advisor";
+      const form = document.getElementById("leadFormWrap");
+      if (form) {
+        form.classList.add("active");
+        document.getElementById("leadSuccess")?.style.setProperty("display", "none");
+        document.getElementById("leadError")?.style.setProperty("display", "none");
+        document.getElementById("firstName")?.focus();
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      }
+    }
+
+    function closeLeadForm() {
+      document.getElementById("leadFormWrap")?.classList.remove("active");
+    }
+
+    async function submitLead() {
+      const firstName   = document.getElementById("firstName")?.value.trim() || "";
+      const lastName    = document.getElementById("lastName")?.value.trim() || "";
+      const email       = document.getElementById("email")?.value.trim() || "";
+      const mobilePhone = document.getElementById("mobilePhone")?.value.trim() || "";
+
+      const successEl = document.getElementById("leadSuccess");
+      const errorEl   = document.getElementById("leadError");
+
+      if (successEl) successEl.style.display = "none";
+      if (errorEl) errorEl.style.display = "none";
+
+      if (!firstName || !lastName || !email || !mobilePhone) {
+        if (errorEl) {
+          errorEl.textContent = "Please fill out first name, last name, email, and mobile phone.";
+          errorEl.style.display = "block";
+        }
+        return;
+      }
+
+      try {
+        const payload = {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          mobile_phone: mobilePhone,
+          source: leadSourceType,
+          page: window.location.href,
+          timestamp: new Date().toISOString()
+        };
+
+        const response = await fetch(ZAPIER_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          if (successEl) {
+            successEl.textContent = "Thanks — your information has been submitted. Steve Tomaselli (NMLS #358920) will follow up soon.";
+            successEl.style.display = "block";
+          }
+          document.getElementById("firstName")?.value = "";
+          document.getElementById("lastName")?.value = "";
+          document.getElementById("email")?.value = "";
+          document.getElementById("mobilePhone")?.value = "";
+        } else {
+          const errorText = await response.text().catch(() => "Unknown");
+          throw new Error(`Webhook failed: ${response.status} - ${errorText}`);
+        }
+      } catch (error) {
+        if (errorEl) {
+          errorEl.textContent = "There was a problem submitting your information. Please try again.";
+          errorEl.style.display = "block";
+        }
+        console.error("Lead submission error:", error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Attach listeners safely
+      document.querySelectorAll(".starter-buttons button, .top-cta-buttons button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const action = btn.dataset.action;
+          const source = btn.dataset.source;
+          const msg = btn.dataset.message;
+
+          if (action === "lead") {
+            openLeadForm(source);
+          } else if (action === "chat" && msg) {
+            sendMessage(msg);
+          }
+        });
+      });
+
+      const sendBtn = document.getElementById("sendBtn");
+      if (sendBtn) sendBtn.addEventListener("click", () => sendMessage());
+
+      const submitBtn = document.getElementById("submitLeadBtn");
+      if (submitBtn) submitBtn.addEventListener("click", submitLead);
+
+      const cancelBtn = document.getElementById("cancelLeadBtn");
+      if (cancelBtn) cancelBtn.addEventListener("click", closeLeadForm);
+    });
+  </script>
+</body>
+</html>
