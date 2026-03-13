@@ -263,7 +263,7 @@
     </div>
 
     <div id="chatBox" class="chat-box">
-      <div class="message bot">Hi, I’m your Texas VA Homebuyer Advisor.
+      <div class="message bot">Hi, I'm your Texas VA Homebuyer Advisor.
 
 I can help you with:
 1. VA ELIGIBILITY
@@ -321,7 +321,6 @@ What would you like help with?</div>
   </div>
 
   <script>
-    const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24672591/uxx1avp/";
     let leadSourceType = "Texas VA Homebuyer Advisor";
     let conversationMessages = [];
 
@@ -420,25 +419,24 @@ What would you like help with?</div>
           timestamp: new Date().toISOString()
         };
 
-        const response = await fetch(ZAPIER_WEBHOOK_URL, {
+        // Routes through Vercel serverless function to avoid CORS issues with Zapier
+        const response = await fetch("/api/submit-lead", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
-        // Fixed: Accept 200 OK as success (Zapier returns empty/minimal body)
         if (response.ok) {
           successEl.textContent = "Thanks — your information has been submitted. Steve Tomaselli (NMLS #358920) will follow up soon.";
           successEl.style.display = "block";
 
-          // Clear form
           document.getElementById("firstName").value = "";
           document.getElementById("lastName").value = "";
           document.getElementById("email").value = "";
           document.getElementById("mobilePhone").value = "";
         } else {
           const errorText = await response.text().catch(() => "Unknown error");
-          throw new Error(`Webhook failed: ${response.status} - ${errorText}`);
+          throw new Error(`Submission failed: ${response.status} - ${errorText}`);
         }
       } catch (error) {
         errorEl.textContent = "There was a problem submitting your information. Please try again.";
@@ -447,9 +445,7 @@ What would you like help with?</div>
       }
     }
 
-    // All event listeners — this block makes the buttons work
     document.addEventListener("DOMContentLoaded", () => {
-      // Attach listeners to starter + CTA buttons
       document.querySelectorAll(".starter-buttons button, .top-cta-buttons button").forEach(btn => {
         btn.addEventListener("click", () => {
           const action = btn.dataset.action;
@@ -464,10 +460,7 @@ What would you like help with?</div>
         });
       });
 
-      // Send button
       document.getElementById("sendBtn").addEventListener("click", () => sendMessage());
-
-      // Lead form buttons
       document.getElementById("submitLeadBtn").addEventListener("click", submitLead);
       document.getElementById("cancelLeadBtn").addEventListener("click", closeLeadForm);
     });
