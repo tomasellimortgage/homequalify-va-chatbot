@@ -341,45 +341,4 @@ What would you like help with?</div>
       try {
         const response = await fetch("/api/chat", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: conversationMessages })
-        });
-
-        const data = await response.json();
-        const cleanedReply = cleanText(data.reply || "Sorry, something went wrong.");
-
-        appendMessage("bot", cleanedReply);
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        conversationMessages.push({ role: "assistant", content: cleanedReply });
-      } catch (error) {
-        appendMessage("bot", "Sorry, I ran into a technical problem. Please try again.");
-        chatBox.scrollTop = chatBox.scrollHeight;
-        console.error("Chat error:", error);
-      }
-    }
-
-    function appendMessage(type, text) {
-      const chatBox = document.getElementById("chatBox");
-      const div = document.createElement("div");
-      div.className = `message ${type}`;
-      div.textContent = cleanText(text);
-      chatBox.appendChild(div);
-    }
-
-    function cleanText(text) {
-      return String(text || "")
-        .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
-        .replace(/\*\*(.*?)\*\*/g, "$1")
-        .replace(/\*(.*?)\*/g, "$1")
-        .replace(/`(.*?)`/g, "$1")
-        .replace(/^#{1,6}\s*/gm, "")
-        .trim();
-    }
-
-    function openLeadForm(source) {
-      leadSourceType = source || "Texas VA Homebuyer Advisor";
-      const form = document.getElementById("leadFormWrap");
-      form.classList.add("active");
-      document.getElementById("leadSuccess").style.display = "none";
-      document.getElementBy
+          headers: { "Content-Type": "
