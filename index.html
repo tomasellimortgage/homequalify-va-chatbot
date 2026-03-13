@@ -256,8 +256,10 @@
     <div class="starter-buttons">
       <button onclick="sendStarter('Am I eligible for a VA loan in Texas?')">AM I ELIGIBLE?</button>
       <button onclick="sendStarter('Do I need a down payment with a VA loan?')">DO I NEED MONEY DOWN?</button>
+      <button onclick="sendStarter('What credit score do I need for a VA loan?')">WHAT ABOUT CREDIT?</button>
       <button onclick="sendStarter('How much home can I afford with a VA loan?')">HOW MUCH HOME CAN I AFFORD?</button>
-      <button onclick="openLeadForm('Can Steve Help Me')">CAN STEVE HELP ME?</button>
+      <button onclick="sendStarter('Can you estimate how much house I could afford with a VA loan?')">CHECK MY VA BUYING POWER</button>
+      <button onclick="openLeadForm('Connect With A VA Expert')">CONNECT WITH A VA EXPERT</button>
     </div>
 
     <div id="chatBox" class="chat-box">
@@ -267,7 +269,8 @@ I can help you with:
 1. VA ELIGIBILITY
 2. HOW MUCH HOME YOU MAY BE ABLE TO AFFORD
 3. DOWN PAYMENT QUESTIONS
-4. NEXT STEPS IF YOU WANT TO BUY IN TEXAS
+4. CREDIT QUESTIONS
+5. NEXT STEPS IF YOU WANT TO BUY IN TEXAS
 
 What would you like help with?</div>
     </div>
@@ -283,7 +286,7 @@ What would you like help with?</div>
     </div>
 
     <div id="leadFormWrap" class="lead-form-wrap">
-      <h3>Get Personalized Help</h3>
+      <h3>Connect With A VA Expert</h3>
       <p>
         Fill this out and Steve Tomaselli (NMLS #358920) can follow up with you about your VA homebuying questions and next steps.
       </p>
@@ -372,7 +375,7 @@ What would you like help with?</div>
     function appendMessage(type, text) {
       const chatBox = document.getElementById("chatBox");
       const div = document.createElement("div");
-      div.className = `message ${type}`;
+      div.className = \`message \${type}\`;
       div.textContent = cleanText(text);
       chatBox.appendChild(div);
     }
