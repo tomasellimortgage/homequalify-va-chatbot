@@ -49,8 +49,9 @@
 
     .subheader p {
       margin: 0 0 12px;
-      font-size: 14px;
+      font-size: 15px;
       line-height: 1.5;
+      font-weight: 500;
     }
 
     .top-cta-buttons,
@@ -245,7 +246,7 @@
 
     <div class="subheader">
       <p>
-        Want personalized help? Steve Tomaselli (NMLS #358920) can review your situation and help you map out your best next step.
+        Want real, personalized guidance from an expert with <strong>32+ years of experience</strong> who works for the <strong>#1 VA mortgage broker in the country</strong>? Steve Tomaselli (NMLS #358920) can review your exact situation and build a clear, tailored plan to get you into your Texas home the smart way.
       </p>
       <div class="top-cta-buttons">
         <button class="primary-btn" data-action="lead" data-source="VA Homebuyer Plan">GET MY VA HOMEBUYER PLAN</button>
@@ -259,7 +260,7 @@
       <button data-action="chat" data-message="What credit score do I need for a VA loan?">WHAT ABOUT CREDIT?</button>
       <button data-action="chat" data-message="How much home can I afford with a VA loan?">HOW MUCH HOME CAN I AFFORD?</button>
       <button data-action="chat" data-message="Can you estimate how much house I could afford with a VA loan?">CHECK MY VA BUYING POWER</button>
-      <button data-action="lead" data-source="Connect With A VA Expert">CONNECT WITH A VA EXPERT</button>
+      <!-- Removed: CONNECT WITH A VA EXPERT button -->
     </div>
 
     <div id="chatBox" class="chat-box">
@@ -456,6 +457,8 @@ What would you like help with?</div>
     // ────────────────────────────────────────────────
 
     document.addEventListener("DOMContentLoaded", () => {
+      console.log("🚀 Script loaded and listeners attached!"); // temporary debug - remove later if desired
+
       // Starter / CTA buttons
       document.querySelectorAll(".starter-buttons button, .top-cta-buttons button").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -471,7 +474,7 @@ What would you like help with?</div>
         });
       });
 
-      // Send message button + Enter key already handled inline
+      // Send message button
       document.getElementById("sendBtn").addEventListener("click", () => sendMessage());
 
       // Lead form buttons
