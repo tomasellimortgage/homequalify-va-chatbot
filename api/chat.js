@@ -17,8 +17,7 @@ Your goals are to:
 1. Answer questions about VA home loans in Texas
 2. Help buyers understand eligibility and affordability
 3. Identify serious homebuyers
-4. Guide motivated buyers toward the next step with Steve Tomaselli (NMLS #358920)
-5. Generate qualified leads naturally without sounding pushy
+4. Guide motivated buyers toward filling out the contact form on this page
 
 MOST COMMON QUESTIONS YOU SHOULD HANDLE WELL:
 - Am I eligible for a VA loan?
@@ -57,10 +56,7 @@ SPECIAL RULE FOR "NO LENDER YET":
 If the user says they have NOT talked to a lender yet, or says "no" in response to a lender-related question:
 1. Briefly explain that getting preapproved is the smartest next step
 2. Mention Steve Tomaselli (NMLS #358920) as the recommended next step
-3. Ask:
-   "Would you like to get preapproved with Steve Tomaselli (NMLS #358920)?"
-   or
-   "Would you like Steve Tomaselli (NMLS #358920) to contact you about getting preapproved?"
+3. Direct them to fill out the contact form on this page to get connected with Steve
 
 BUYING POWER FEATURE:
 If the user asks about affordability, buying power, payment, preapproval amount, or how much house they can afford:
@@ -75,35 +71,17 @@ If the user asks about affordability, buying power, payment, preapproval amount,
      620-679
      NOT SURE
 4. After collecting those answers, give a ROUGH buying-power estimate with a clear disclaimer that taxes, insurance, and full underwriting matter
-5. Then say:
-   "If you'd like, Steve Tomaselli (NMLS #358920) can review your numbers and help you with a more accurate VA pre-approval."
-6. Then ask whether they want Steve to contact them
+5. Then say: "If you'd like a more accurate VA pre-approval, fill out the short contact form on this page and Steve Tomaselli (NMLS #358920) will follow up with you."
 
 LEAD CAPTURE RULES:
-If the user says yes, wants Steve to contact them, wants to get preapproved, wants to connect with a VA expert, or wants to move forward:
-- collect contact info ONE ITEM AT A TIME
-- ask in this order:
-  1. FULL NAME
-  2. EMAIL ADDRESS
-  3. PHONE NUMBER
-- wait for the user's answer before asking for the next item
-- do not ask for all 3 at once unless the user volunteers them all at once
-
-If the user gives one of the items, thank them briefly and ask only for the next missing item.
-
-Examples:
-- "Great — what's your full name?"
-- "Thanks. What's the best email address for Steve to reach you?"
-- "Perfect. What's the best phone number for Steve to contact you?"
-
-When all 3 are collected:
-- thank them
-- say Steve Tomaselli (NMLS #358920) will follow up shortly
-- remind them they can also use the contact form on the page
+- Do NOT collect name, email, or phone number in the chat
+- If the user wants to connect with Steve, get preapproved, or move forward in any way, say:
+  "Just fill out the short contact form on this page and Steve Tomaselli (NMLS #358920) will follow up with you shortly."
+- Never ask for personal contact information in the chat window
 
 Never pressure the user.
 Always be useful first.
-`;
+\`;
 
     const safeMessages = Array.isArray(messages) ? messages : [];
 
@@ -120,7 +98,7 @@ Always be useful first.
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+        Authorization: \`Bearer \${process.env.OPENAI_API_KEY}\`
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
@@ -133,7 +111,7 @@ Always be useful first.
 
     if (!response.ok) {
       return res.status(200).json({
-        reply: `OpenAI error: ${data?.error?.message || "Unknown error"}`
+        reply: \`OpenAI error: \${data?.error?.message || "Unknown error"}\`
       });
     }
 
@@ -148,62 +126,9 @@ Always be useful first.
       .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
       .replace(/\*\*(.*?)\*\*/g, "$1")
       .replace(/\*(.*?)\*/g, "$1")
-      .replace(/`(.*?)`/g, "$1")
+      .replace(/\`(.*?)\`/g, "$1")
       .replace(/^#{1,6}\s*/gm, "")
       .trim();
-
-    // ---------------------------------------------------------------
-    // LEAD DETECTION: Scan conversation for name, email, phone
-    // ---------------------------------------------------------------
-    const allText = safeMessages
-      .filter(m => m.role === "user")
-      .map(m => m.content)
-      .join("\n");
-
-    const emailMatch = allText.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/);
-    const phoneMatch = allText.match(/(\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4})/);
-
-    // Extract name: look for assistant asking for name, then grab next user message
-    let detectedName = null;
-    for (let i = 0; i < safeMessages.length - 1; i++) {
-      const isAssistantAskingName =
-        safeMessages[i].role === "assistant" &&
-        /full name|your name/i.test(safeMessages[i].content);
-      const nextIsUser = safeMessages[i + 1]?.role === "user";
-      if (isAssistantAskingName && nextIsUser) {
-        detectedName = safeMessages[i + 1].content.trim();
-        break;
-      }
-    }
-
-    // Fire Zapier only when all 3 are present and not already sent
-    const alreadySent = safeMessages.some(
-      m => m.role === "assistant" && /will follow up shortly|submitted your info/i.test(m.content)
-    );
-
-    if (emailMatch && phoneMatch && detectedName && !alreadySent) {
-      const nameParts = detectedName.trim().split(/\s+/);
-      const firstName = nameParts[0] || detectedName;
-      const lastName = nameParts.slice(1).join(" ") || "";
-
-      try {
-        await fetch("https://hooks.zapier.com/hooks/catch/24672591/uxx1avp/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            first_name: firstName,
-            last_name: lastName,
-            email: emailMatch[0],
-            mobile_phone: phoneMatch[0],
-            source: "Chat Conversation",
-            page: "",
-            timestamp: new Date().toISOString()
-          })
-        });
-      } catch (zapErr) {
-        console.error("Zapier fire failed:", zapErr.message);
-      }
-    }
 
     return res.status(200).json({
       reply: reply || "Sorry, I couldn't generate a response."
@@ -211,7 +136,7 @@ Always be useful first.
 
   } catch (error) {
     return res.status(200).json({
-      reply: `Server error: ${error.message}`
+      reply: \`Server error: \${error.message}\`
     });
   }
 };
