@@ -17,7 +17,7 @@ module.exports = async function handler(req, res) {
       "1. Answer questions about VA home loans in Texas",
       "2. Help buyers understand eligibility and affordability",
       "3. Identify serious homebuyers",
-      "4. Guide motivated buyers toward filling out the contact form on this page",
+      "4. Guide motivated buyers toward connecting with Steve Tomaselli",
       "",
       "MOST COMMON QUESTIONS YOU SHOULD HANDLE WELL:",
       "- Am I eligible for a VA loan?",
@@ -49,7 +49,8 @@ module.exports = async function handler(req, res) {
       "If the user says they have NOT talked to a lender yet:",
       "1. Briefly explain that getting preapproved is the smartest next step",
       "2. Mention Steve Tomaselli (NMLS #358920) as the recommended next step",
-      "3. Direct them to fill out the contact form on this page to get connected with Steve",
+      "3. Tell them a contact form is opening for them now",
+      "4. End your reply with exactly this token on its own line: ##OPEN_LEAD_FORM##",
       "",
       "BUYING POWER FEATURE:",
       "If the user asks about affordability or how much home they can afford:",
@@ -59,12 +60,14 @@ module.exports = async function handler(req, res) {
       "   - ESTIMATED MONTHLY DEBTS",
       "   - CREDIT SCORE RANGE: 740+ / 680-739 / 620-679 / NOT SURE",
       "3. After collecting those answers, give a ROUGH buying-power estimate with a disclaimer",
-      "4. Then say: If you would like a more accurate VA pre-approval, fill out the short contact form on this page and Steve Tomaselli (NMLS #358920) will follow up with you.",
+      "4. Then tell them a contact form is opening so Steve can give them an accurate pre-approval",
+      "5. End your reply with exactly this token on its own line: ##OPEN_LEAD_FORM##",
       "",
       "LEAD CAPTURE RULES:",
       "- Do NOT collect name, email, or phone number in the chat",
-      "- If the user wants to connect with Steve, get preapproved, or move forward in any way, say:",
-      "  Just fill out the short contact form on this page and Steve Tomaselli (NMLS #358920) will follow up with you shortly.",
+      "- If the user wants to connect with Steve, get preapproved, or move forward in any way:",
+      "  1. Tell them you are pulling up a short form for them right now",
+      "  2. End your reply with exactly this token on its own line: ##OPEN_LEAD_FORM##",
       "- Never ask for personal contact information in the chat window",
       "",
       "Never pressure the user. Always be useful first."
@@ -100,7 +103,8 @@ module.exports = async function handler(req, res) {
 
     if (!response.ok) {
       return res.status(200).json({
-        reply: "OpenAI error: " + (data && data.error ? data.error.message : "Unknown error")
+        reply: "OpenAI error: " + (data && data.error ? data.error.message : "Unknown error"),
+        openLeadForm: false
       });
     }
 
@@ -112,7 +116,12 @@ module.exports = async function handler(req, res) {
       .join("\n")
       .trim();
 
+    // Check if the AI wants to open the lead form
+    var openLeadForm = replyText.includes("##OPEN_LEAD_FORM##");
+
+    // Strip the token and clean up markdown
     replyText = replyText
+      .replace(/##OPEN_LEAD_FORM##/g, "")
       .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
       .replace(/\*\*(.*?)\*\*/g, "$1")
       .replace(/\*(.*?)\*/g, "$1")
@@ -121,12 +130,14 @@ module.exports = async function handler(req, res) {
       .trim();
 
     return res.status(200).json({
-      reply: replyText || "Sorry, I could not generate a response."
+      reply: replyText || "Sorry, I could not generate a response.",
+      openLeadForm: openLeadForm
     });
 
   } catch (error) {
     return res.status(200).json({
-      reply: "Server error: " + error.message
+      reply: "Server error: " + error.message,
+      openLeadForm: false
     });
   }
 };
