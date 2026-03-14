@@ -49,8 +49,7 @@ module.exports = async function handler(req, res) {
       "If the user says they have NOT talked to a lender yet:",
       "1. Briefly explain that getting preapproved is the smartest next step",
       "2. Mention Steve Tomaselli (NMLS #358920) as the recommended next step",
-      "3. Tell them a contact form is opening for them now",
-      "4. End your reply with exactly this token on its own line: ##OPEN_LEAD_FORM##",
+      "3. Explicitly instruct them to click the 'HAVE STEVE CONTACT ME' button located directly below this chat box to securely submit their information.",
       "",
       "BUYING POWER FEATURE:",
       "If the user asks about affordability or how much home they can afford:",
@@ -60,14 +59,12 @@ module.exports = async function handler(req, res) {
       "   - ESTIMATED MONTHLY DEBTS",
       "   - CREDIT SCORE RANGE: 740+ / 680-739 / 620-679 / NOT SURE",
       "3. After collecting those answers, give a ROUGH buying-power estimate with a disclaimer",
-      "4. Then tell them a contact form is opening so Steve can give them an accurate pre-approval",
-      "5. End your reply with exactly this token on its own line: ##OPEN_LEAD_FORM##",
+      "4. Instruct them to click the 'HAVE STEVE CONTACT ME' button below the chat box so Steve can give them an accurate pre-approval.",
       "",
       "LEAD CAPTURE RULES:",
       "- Do NOT collect name, email, or phone number in the chat",
       "- If the user wants to connect with Steve, get preapproved, or move forward in any way:",
-      "  1. Tell them you are pulling up a short form for them right now",
-      "  2. End your reply with exactly this token on its own line: ##OPEN_LEAD_FORM##",
+      "  1. Explicitly instruct them to click the 'HAVE STEVE CONTACT ME' button located directly below this chat box.",
       "- Never ask for personal contact information in the chat window",
       "",
       "Never pressure the user. Always be useful first."
@@ -116,7 +113,8 @@ module.exports = async function handler(req, res) {
       .join("\n")
       .trim();
 
-    // Check if the AI wants to open the lead form
+    // The token parsing is left intact to catch any hallucinated tokens, 
+    // but the AI is no longer instructed to use it.
     var openLeadForm = replyText.includes("##OPEN_LEAD_FORM##");
 
     // Strip the token and clean up markdown
