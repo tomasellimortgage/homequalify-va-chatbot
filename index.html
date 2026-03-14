@@ -337,18 +337,6 @@ What would you like help with?</div>
 
       conversationMessages.push({ role: "user", content: message });
 
-      // Check if user wants to contact Steve — open lead form immediately
-      const contactKeywords = ["contact", "reach out", "talk to", "speak with", "call me", "email me",
-        "follow up", "get in touch", "connect", "schedule", "consultation", "steve",
-        "sign up", "next steps", "ready to", "help me", "i want to buy",
-        "how do i start", "where do i start", "get started"];
-      const lowerMsg = message.toLowerCase();
-      const wantsContact = contactKeywords.some(k => lowerMsg.includes(k));
-      if (wantsContact && !document.getElementById("leadFormWrap").classList.contains("shown")) {
-        document.getElementById("leadFormWrap").classList.add("shown");
-        setTimeout(() => openLeadForm("Chat Conversation"), 400);
-      }
-
       try {
         const response = await fetch("/api/chat", {
           method: "POST",
@@ -363,6 +351,12 @@ What would you like help with?</div>
         chatBox.scrollTop = chatBox.scrollHeight;
 
         conversationMessages.push({ role: "assistant", content: cleanedReply });
+
+        // If the AI signals to open the lead form, open it automatically
+        if (data.openLeadForm && !document.getElementById("leadFormWrap").classList.contains("shown")) {
+          document.getElementById("leadFormWrap").classList.add("shown");
+          setTimeout(() => openLeadForm("VA Homebuyer Plan"), 600);
+        }
 
       } catch (error) {
         appendMessage("bot", "Sorry, I ran into a technical problem. Please try again.");
