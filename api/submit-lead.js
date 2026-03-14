@@ -1,3 +1,9 @@
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -6,10 +12,26 @@ export default async function handler(req, res) {
   const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/24672591/uxx1avp/";
 
   try {
+    // Safely parse body whether it arrives as a string or object
+    let body = req.body;
+    if (typeof body === "string") {
+      try {
+        body = JSON.parse(body);
+      } catch {
+        return res.status(400).json({ error: "Invalid JSON body" });
+      }
+    }
+
+    // Guard: reject if all key fields are empty
+    const { first_name, last_name, email, mobile_phone } = body || {};
+    if (!first_name && !last_name && !email && !mobile_phone) {
+      return res.status(400).json({ error: "Empty submission rejected" });
+    }
+
     const response = await fetch(ZAPIER_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(body),
     });
 
     if (response.ok) {
