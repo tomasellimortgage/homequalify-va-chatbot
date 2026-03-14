@@ -86,19 +86,19 @@ If the user says yes, wants Steve to contact them, wants to get preapproved, wan
   1. FULL NAME
   2. EMAIL ADDRESS
   3. PHONE NUMBER
-- wait for the user’s answer before asking for the next item
+- wait for the user's answer before asking for the next item
 - do not ask for all 3 at once unless the user volunteers them all at once
 
 If the user gives one of the items, thank them briefly and ask only for the next missing item.
 
 Examples:
-- "Great — what’s your full name?"
-- "Thanks. What’s the best email address for Steve to reach you?"
-- "Perfect. What’s the best phone number for Steve to contact you?"
+- "Great — what's your full name?"
+- "Thanks. What's the best email address for Steve to reach you?"
+- "Perfect. What's the best phone number for Steve to contact you?"
 
 When all 3 are collected:
 - thank them
-- say Steve Tomaselli (NMLS #358920) can follow up
+- say Steve Tomaselli (NMLS #358920) will follow up shortly
 - remind them they can also use the contact form on the page
 
 Never pressure the user.
@@ -111,14 +111,8 @@ Always be useful first.
       role: msg.role === "assistant" ? "assistant" : "user",
       content: [
         msg.role === "assistant"
-          ? {
-              type: "output_text",
-              text: String(msg.content || "")
-            }
-          : {
-              type: "input_text",
-              text: String(msg.content || "")
-            }
+          ? { type: "output_text", text: String(msg.content || "") }
+          : { type: "input_text", text: String(msg.content || "") }
       ]
     }));
 
@@ -158,9 +152,63 @@ Always be useful first.
       .replace(/^#{1,6}\s*/gm, "")
       .trim();
 
+    // ---------------------------------------------------------------
+    // LEAD DETECTION: Scan conversation for name, email, phone
+    // ---------------------------------------------------------------
+    const allText = safeMessages
+      .filter(m => m.role === "user")
+      .map(m => m.content)
+      .join("\n");
+
+    const emailMatch = allText.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/);
+    const phoneMatch = allText.match(/(\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4})/);
+
+    // Extract name: look for assistant asking for name, then grab next user message
+    let detectedName = null;
+    for (let i = 0; i < safeMessages.length - 1; i++) {
+      const isAssistantAskingName =
+        safeMessages[i].role === "assistant" &&
+        /full name|your name/i.test(safeMessages[i].content);
+      const nextIsUser = safeMessages[i + 1]?.role === "user";
+      if (isAssistantAskingName && nextIsUser) {
+        detectedName = safeMessages[i + 1].content.trim();
+        break;
+      }
+    }
+
+    // Fire Zapier only when all 3 are present and not already sent
+    const alreadySent = safeMessages.some(
+      m => m.role === "assistant" && /will follow up shortly|submitted your info/i.test(m.content)
+    );
+
+    if (emailMatch && phoneMatch && detectedName && !alreadySent) {
+      const nameParts = detectedName.trim().split(/\s+/);
+      const firstName = nameParts[0] || detectedName;
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      try {
+        await fetch("https://hooks.zapier.com/hooks/catch/24672591/uxx1avp/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName,
+            email: emailMatch[0],
+            mobile_phone: phoneMatch[0],
+            source: "Chat Conversation",
+            page: "",
+            timestamp: new Date().toISOString()
+          })
+        });
+      } catch (zapErr) {
+        console.error("Zapier fire failed:", zapErr.message);
+      }
+    }
+
     return res.status(200).json({
       reply: reply || "Sorry, I couldn't generate a response."
     });
+
   } catch (error) {
     return res.status(200).json({
       reply: `Server error: ${error.message}`
