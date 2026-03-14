@@ -351,6 +351,17 @@ What would you like help with?</div>
         chatBox.scrollTop = chatBox.scrollHeight;
 
         conversationMessages.push({ role: "assistant", content: cleanedReply });
+
+        // After 3 user messages, prompt for contact info if not already shown
+        const userMessageCount = conversationMessages.filter(m => m.role === "user").length;
+        if (userMessageCount === 3 && !document.getElementById("leadFormWrap").classList.contains("shown")) {
+          document.getElementById("leadFormWrap").classList.add("shown");
+          setTimeout(() => {
+            appendMessage("bot", "You have great questions! If you would like Steve Tomaselli to personally follow up with you, fill out the short form below — no obligation.");
+            chatBox.scrollTop = chatBox.scrollHeight;
+            openLeadForm("Chat Conversation");
+          }, 800);
+        }
       } catch (error) {
         appendMessage("bot", "Sorry, I ran into a technical problem. Please try again.");
         chatBox.scrollTop = chatBox.scrollHeight;
